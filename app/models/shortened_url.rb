@@ -1,13 +1,27 @@
 class ShortenedUrl < ActiveRecord::Base
 
   validates :short_url, presence: true, uniqueness: true
-  validates :submitter_id, presence: true, uniqueness: true
+  validates :submitter_id, presence: true
 
   belongs_to(
     :submitter,
     :class_name => "User",
     :foreign_key => :submitter_id,
     :primary_key => :id
+  )
+
+  has_many(
+    :visits,
+    :class_name => "Visit",
+    :foreign_key => :short_url_id,
+    :primary_key => :id
+  )
+
+  #Visitors for a short url
+  has_many(
+    :visitors,
+    through: :visits,
+    source: :user#s
   )
 
   def self.random_code
@@ -27,6 +41,18 @@ class ShortenedUrl < ActiveRecord::Base
     )
   end
 
+  def num_clicks
+    visitors.count
+  end
 
+  def num_uniques
+    visitors.select("user_id").distinct.count
+  end
+
+  def num_uniq_recent_clicks
+    visitors.select("visits.user_id").where("visits.created_at > ?", 10.minutes.ago ).distinct.count
+    # This works, too, but only because in all the joins we make, "user_id" is unique:
+    # visitors.select("user_id").where("visits.created_at > ?", 10.minutes.ago ).distinct.count
+  end
 
 end

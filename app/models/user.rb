@@ -10,4 +10,19 @@ class User < ActiveRecord::Base
     :foreign_key => :submitter_id,
     :primary_key => :id
   )
+
+  #Visits by user
+  has_many(
+    :visits,
+    :class_name => "Visit",
+    :foreign_key => :user_id,
+    :primary_key => :id
+  )
+
+  #Getting visit URLS for a user
+  has_many(
+    :visited_urls,
+    through: :visits,
+    source: :short_url
+  )
 end
