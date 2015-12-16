@@ -22,6 +22,7 @@ class User < ActiveRecord::Base
   #Getting visit URLS for a user
   has_many(
     :visited_urls,
+    -> { distinct },
     through: :visits,
     source: :short_url
   )
