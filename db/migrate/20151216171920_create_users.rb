@@ -1,7 +1,8 @@
 class CreateUsers < ActiveRecord::Migration
+  #Constraints go in migrations
   def change
     create_table :users do |t|
-      t.string :email, uniqueness: true
+      t.string :email
 
       t.timestamps
     end
